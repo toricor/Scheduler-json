@@ -16,11 +16,6 @@ get '/' => sub {
     }else{
         @schedules = $c->db->search('schedule', {}, { order_by => 'date'});
     }
-    #for my $sche (@schedules) {
-    #    print STDERR $sche->title . "\n";
-    #}  
-    #
-    #
     return $c->render('index.tx', { schedules => \@schedules });
 };
 
