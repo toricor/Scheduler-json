@@ -32,13 +32,10 @@ get '/login/edit' => sub {
 
 post '/post' => sub {
     my ($c) = @_;
-    my $title = $c->req->parameters->{title};
-    my $date  = $c->req->parameters->{date};
-    my $date_epoch = Time::Piece->strptime($date, '%Y/%m/%d')->epoch;
-
+    
     $c->db->insert(schedule => {
-        title => $title,
-        date  => $date_epoch,
+        title => $c->req->parameters->{title},
+        date  => $c->req->parameters->{date},
     });
     
     return $c->redirect('/');
@@ -50,7 +47,6 @@ post '/schedules/update_title' => sub {
     my $id         = $c->req->parameters->{id};
     my $new_title  = $c->req->parameters->{new_title};
 
-    my $row = $c->db->single('schedule', {id => $id});
     $c->db->update('schedule', {'title' => $new_title},{'id' => $id});
     return $c->redirect('/login/edit');
 };
