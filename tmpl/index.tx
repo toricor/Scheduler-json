@@ -38,11 +38,6 @@
                 <td><: $sche.title :></td>
                 <td><: $sche.date.strftime("%Y/%m/%d") :></td>
             : }
-            <td>
-                <form method="POST" action="<: uri_for('schedules/'~$sche.id~'/delete') :>">
-                    <button type="submit" class="btn btn-danger">削除</button>
-                </form>
-            </td>
         </tr>
     : }
     </tbody>

@@ -49,6 +49,7 @@
             </td>
             <td>
                 <form method="POST" action="<: uri_for('schedules/delete') :>">
+                    <input type="hidden" class="form-hidden" name="id" value="<: $sche.id :>">
                     <button type="submit" class="btn btn-danger">削除</button>
                 </form>
             </td>
