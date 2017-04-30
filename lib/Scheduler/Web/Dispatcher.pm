@@ -4,25 +4,32 @@ use warnings;
 use utf8;
 use Amon2::Web::Dispatcher::RouterBoom;
 use Time::Piece;
+use DDP;
 
 get '/' => sub {
     my ($c) = @_;
-    my $keyword = 'reverse';
-    my $query   = $c->req->parameters->{order} // '';
-    my $order = $keyword eq $query ? 1 : 0; #'/?order=reverse'
-    my @schedules;
-    unless ($order) {
-        @schedules = $c->db->search('schedule', {}, { order_by => 'date DESC'});
-    }else{
-        @schedules = $c->db->search('schedule', {}, { order_by => 'date'});
-    }
-    return $c->render('index.tx', { schedules => \@schedules });
+    my @schedules = $c->db->search('schedule', {}, { order_by => 'date'});
+    return $c->render_json([ 
+        map {
+            +{
+                 id    => $_->id,
+                 title => $_->title,
+                 date  => $_->date->ymd,
+             }
+         } @schedules
+       ]
+    );
 };
 
-get '/login/edit' => sub {
-    my ($c) = @_;
-    my @schedules = $c->db->search('schedule', {}, { order_by => 'date'});
-    return $c->render('index_editable.tx', { schedules => \@schedules});
+get '/item/:item_id' => sub {
+     my ($c, $args) = @_;
+     my $item_id = $args->{item_id};
+     my $row = $c->db->single('schedule', { id => $item_id});
+     return $c->render_json({
+         id    => $item_id,
+         title => $row->title,
+         date  => $row->date->ymd,
+     });
 };
 
 post '/post' => sub {
