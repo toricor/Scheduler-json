@@ -18,8 +18,16 @@ get '/' => sub {
     }
     #for my $sche (@schedules) {
     #    print STDERR $sche->title . "\n";
-    #}   
+    #}  
+    #
+    #
     return $c->render('index.tx', { schedules => \@schedules });
+};
+
+get '/login/edit' => sub {
+    my ($c) = @_;
+    my @schedules = $c->db->search('schedule', {}, { order_by => 'date'});
+    return $c->render('index_editable.tx', { schedules => \@schedules});
 };
 
 post '/post' => sub {
@@ -37,9 +45,19 @@ post '/post' => sub {
 
 };
 
-post '/schedules/:id/delete' => sub {
+post '/schedules/update_title' => sub {
     my ($c, $args) = @_;
-    my $id = $args->{id};
+    my $id         = $c->req->parameters->{id};
+    my $new_title  = $c->req->parameters->{new_title};
+
+    my $row = $c->db->single('schedule', {id => $id});
+    $c->db->update('schedule', {'title' => $new_title},{'id' => $id});
+    return $c->redirect('/login/edit');
+};
+
+post '/schedules/delete' => sub {
+    my ($c, $args) = @_;
+    my $id = $c->req->parameters->{id};
 
     $c->db->delete('schedule' => { id => $id});
     return $c->redirect('/');

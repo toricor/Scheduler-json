@@ -1,0 +1,59 @@
+: cascade "include/layout.tx"
+
+: override content -> {
+
+<h1 style="padding: 70px; text-align: center; font-size: 80px; line-height: 1; letter-spacing: -2px;">Scheduler</h1>
+
+<hr />
+
+<form class="form-inline" method="POST" action="<: uri_for('/post') :>">
+    <div class="form-group">
+        <label>タイトル</label>
+        <input type="text" class="form-control" name="title" placeholder="例:Perlの勉強">
+    </div>
+    <div class="form-group">
+        <label>日付</label>
+        <input type="text" class="form-control" name="date" placeholder="例:2015/03/10">
+
+    </div>
+    <button type="submit" class="btn btn-default">登録</button>
+</form>
+
+<hr />
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>タイトル</th>
+            <th>日時</th>
+        </tr>
+    </thead>
+    <tbody>
+    :for $schedules -> $sche {
+        <tr>
+            : if $sche.date.localtime().ymd == $sche.date.ymd {
+                 <td><font color="#FF3366"><b><: $sche.title :></b></font></td>
+                 <td><font color="#FF3366"><b><: $sche.date.strftime("%Y/%m/%d") ~ "(本日です)" :></b></font></td>
+            : }else{
+                <td><: $sche.title :></td>
+                <td><: $sche.date.strftime("%Y/%m/%d") :></td>
+            : }
+            <td>
+                <form method="POST" action="<: uri_for('schedules/update_title') :>">
+                    <div class="form-group-2">
+                        <input type="text" class="form-control" name="new_title" value="<: $sche.title :>">
+                        <input type="hidden" class="form-hidden" name="id" value="<: $sche.id :>">
+                        <button type="submit" class="btn btn-primary">タイトル編集</button>
+                    </div>
+                </form>
+            </td>
+            <td>
+                <form method="POST" action="<: uri_for('schedules/delete') :>">
+                    <button type="submit" class="btn btn-danger">削除</button>
+                </form>
+            </td>
+        </tr>
+    : }
+    </tbody>
+    </table>
+: }
