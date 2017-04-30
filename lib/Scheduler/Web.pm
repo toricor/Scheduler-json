@@ -16,6 +16,7 @@ __PACKAGE__->load_plugins(
     'Web::FillInFormLite',
     'Web::JSON',
     '+Scheduler::Web::Plugin::Session',
+    '+Scheduler::Web::Plugin::Response'
 );
 
 # setup view

@@ -4,11 +4,11 @@ use warnings;
 use utf8;
 use Amon2::Web::Dispatcher::RouterBoom;
 use Time::Piece;
-use DDP;
 
 get '/' => sub {
     my ($c) = @_;
-    my @schedules = $c->db->search('schedule', {}, { order_by => 'date'});
+    my @schedules = $c->db->search('schedule', {}, { order_by => 'date'})
+        or return $c->res_404_json;
     return $c->render_json([ 
         map {
             +{
@@ -24,7 +24,8 @@ get '/' => sub {
 get '/item/:item_id' => sub {
      my ($c, $args) = @_;
      my $item_id = $args->{item_id};
-     my $row = $c->db->single('schedule', { id => $item_id});
+     my $row = $c->db->single('schedule', { id => $item_id})
+        or return $c->res_404_json;
      return $c->render_json({
          id    => $item_id,
          title => $row->title,
@@ -56,8 +57,9 @@ post '/schedules/update_title' => sub {
 post '/schedules/delete' => sub {
     my ($c, $args) = @_;
     my $id = $c->req->parameters->{id};
-
+    
     $c->db->delete('schedule' => { id => $id});
+        $c->res_404_json;
     return $c->redirect('/');
 };
 
